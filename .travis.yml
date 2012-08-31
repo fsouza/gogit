@@ -13,6 +13,7 @@ install:
   - sudo cmake --build . --target install
   - popd
   - popd
+	- sudo ldconfig
 script:
   - pushd git
   - CFLAGS=-I/usr/local/include/ LDFLAGS=-L/usr/local/lib/ go test
