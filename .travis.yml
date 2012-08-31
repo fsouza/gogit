@@ -1,4 +1,7 @@
 language: go
+env:
+  - CFLAGS=-I/usr/local/include/
+  - LDFLAGS=-L/usr/local/lib/
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install cmake curl -qq
