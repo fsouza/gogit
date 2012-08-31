@@ -16,5 +16,5 @@ install:
 	- sudo ldconfig
 script:
   - pushd git
-  - CFLAGS=-I/usr/local/include/ LDFLAGS=-L/usr/local/lib/ go test
+  - CFLAGS="-I/usr/local/include/" LDFLAGS="-L/usr/local/lib/" go test
   - popd
