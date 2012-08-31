@@ -54,6 +54,19 @@ func (c *Config) GetBool(name string) (bool, error) {
 	return v == 1, nil
 }
 
+func (c *Config) SetBool(name string, value bool) error {
+	var v C.int = 0
+	if value {
+		v = 1
+	}
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	if C.git_config_set_bool(c.config, cname, v) != C.GIT_OK {
+		return LastErr()
+	}
+	return nil
+}
+
 func (c *Config) GetString(name string) (string, error) {
 	var v *C.char
 	cname := C.CString(name)
@@ -64,6 +77,17 @@ func (c *Config) GetString(name string) (string, error) {
 	return C.GoString(v), nil
 }
 
+func (c *Config) SetString(name, value string) error {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	cvalue := C.CString(value)
+	defer C.free(unsafe.Pointer(cvalue))
+	if C.git_config_set_string(c.config, cname, cvalue) != C.GIT_OK {
+		return LastErr()
+	}
+	return nil
+}
+
 func (c *Config) GetInt64(name string) (int64, error) {
 	var v C.int64_t
 	cname := C.CString(name)
@@ -72,6 +96,15 @@ func (c *Config) GetInt64(name string) (int64, error) {
 		return 0, LastErr()
 	}
 	return int64(v), nil
+}
+
+func (c *Config) SetInt64(name string, value int64) error {
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	if C.git_config_set_int64(c.config, cname, C.int64_t(value)) != C.GIT_OK {
+		return LastErr()
+	}
+	return nil
 }
 
 func LastErr() error {
