@@ -78,3 +78,25 @@ func TestConfigGetString(t *testing.T) {
 		t.Errorf("Failed to get github.user. Want fsouza, got %s.", user)
 	}
 }
+
+func TestConfigGetInt(t *testing.T) {
+	p := createRepository()
+	defer removeRepository(p)
+	r, err := GetRepository(p)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	defer r.Free()
+	config, err := r.Config()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	commits, err := config.GetInt64("section.commits")
+	if err != nil {
+		t.Error(err)
+	} else if commits != 800 {
+		t.Errorf("Failed to get section.commits. Want 800, got %d.", commits)
+	}
+}

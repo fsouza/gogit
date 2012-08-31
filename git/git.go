@@ -64,6 +64,16 @@ func (c *Config) GetString(name string) (string, error) {
 	return C.GoString(v), nil
 }
 
+func (c *Config) GetInt64(name string) (int64, error) {
+	var v C.int64_t
+	cname := C.CString(name)
+	defer C.free(unsafe.Pointer(cname))
+	if C.git_config_get_int64(&v, c.config, cname) != C.GIT_OK {
+		return 0, LastErr()
+	}
+	return int64(v), nil
+}
+
 func LastErr() error {
 	err := C.giterr_last()
 	return errors.New(C.GoString(err.message))
