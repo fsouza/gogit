@@ -14,6 +14,22 @@ type Repository struct {
 	repository *C.struct_git_repository
 }
 
+// NewRepository inits a new repository.
+func NewRepository(path string, bare bool) (*Repository, error) {
+	var cbare C.unsigned = 0
+	if bare {
+		cbare = 1
+	}
+	repo := &Repository{}
+	cpath := C.CString(path)
+	defer C.free(unsafe.Pointer(cpath))
+	if C.git_repository_init(&repo.repository, cpath, cbare) != C.GIT_OK {
+		return nil, LastErr()
+	}
+	return repo, nil
+}
+
+// GetRepository opens a repository by its path.
 func GetRepository(path string) (*Repository, error) {
 	repo := &Repository{}
 	cpath := C.CString(path)
