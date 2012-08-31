@@ -15,5 +15,5 @@ install:
   - popd
 script:
   - pushd git
-  - go get
+  - go test
   - popd
