@@ -1,0 +1,16 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = false
+[remote "origin"]
+	url = git@github.com:fsouza/gogit.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[github]
+	user = fsouza
+[gitreview]
+	username = franciscosouza
+[section]
+	commits = 800
