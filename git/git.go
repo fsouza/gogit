@@ -24,7 +24,7 @@ func NewRepository(path string, bare bool) (*Repository, error) {
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
 	if C.git_repository_init(&repo.repository, cpath, cbare) != C.GIT_OK {
-		return nil, LastErr()
+		return nil, lastErr()
 	}
 	return repo, nil
 }
@@ -35,7 +35,7 @@ func GetRepository(path string) (*Repository, error) {
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
 	if C.git_repository_open(&repo.repository, cpath) != C.GIT_OK {
-		return nil, LastErr()
+		return nil, lastErr()
 	}
 	return repo, nil
 }
@@ -43,7 +43,7 @@ func GetRepository(path string) (*Repository, error) {
 func (r *Repository) Config() (*Config, error) {
 	conf := &Config{}
 	if C.git_repository_config(&conf.config, r.repository) != C.GIT_OK {
-		return nil, LastErr()
+		return nil, lastErr()
 	}
 	return conf, nil
 }
@@ -65,7 +65,7 @@ func (c *Config) GetBool(name string) (bool, error) {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	if C.git_config_get_bool(&v, c.config, cname) != C.GIT_OK {
-		return false, LastErr()
+		return false, lastErr()
 	}
 	return v == 1, nil
 }
@@ -78,7 +78,7 @@ func (c *Config) SetBool(name string, value bool) error {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	if C.git_config_set_bool(c.config, cname, v) != C.GIT_OK {
-		return LastErr()
+		return lastErr()
 	}
 	return nil
 }
@@ -88,7 +88,7 @@ func (c *Config) GetString(name string) (string, error) {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	if C.git_config_get_string(&v, c.config, cname) != C.GIT_OK {
-		return "", LastErr()
+		return "", lastErr()
 	}
 	return C.GoString(v), nil
 }
@@ -99,7 +99,7 @@ func (c *Config) SetString(name, value string) error {
 	cvalue := C.CString(value)
 	defer C.free(unsafe.Pointer(cvalue))
 	if C.git_config_set_string(c.config, cname, cvalue) != C.GIT_OK {
-		return LastErr()
+		return lastErr()
 	}
 	return nil
 }
@@ -109,7 +109,7 @@ func (c *Config) GetInt64(name string) (int64, error) {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	if C.git_config_get_int64(&v, c.config, cname) != C.GIT_OK {
-		return 0, LastErr()
+		return 0, lastErr()
 	}
 	return int64(v), nil
 }
@@ -118,12 +118,12 @@ func (c *Config) SetInt64(name string, value int64) error {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
 	if C.git_config_set_int64(c.config, cname, C.int64_t(value)) != C.GIT_OK {
-		return LastErr()
+		return lastErr()
 	}
 	return nil
 }
 
-func LastErr() error {
+func lastErr() error {
 	err := C.giterr_last()
 	return errors.New(C.GoString(err.message))
 }
