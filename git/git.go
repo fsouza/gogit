@@ -10,11 +10,17 @@ import (
 	"unsafe"
 )
 
+// Repository is the basic type of the git package, it represents a git
+// repository.
 type Repository struct {
 	repository *C.struct_git_repository
 }
 
 // NewRepository inits a new repository.
+//
+// If the path does not exist, it will be created.
+//
+// Returns an instance of Repository, or an error in case of failure.
 func NewRepository(path string, bare bool) (*Repository, error) {
 	var cbare C.unsigned = 0
 	if bare {
@@ -40,6 +46,8 @@ func GetRepository(path string) (*Repository, error) {
 	return repo, nil
 }
 
+// Config returns a Config instance, representing the configuration of the
+// repository.
 func (r *Repository) Config() (*Config, error) {
 	conf := &Config{}
 	if C.git_repository_config(&conf.config, r.repository) != C.GIT_OK {
@@ -48,18 +56,41 @@ func (r *Repository) Config() (*Config, error) {
 	return conf, nil
 }
 
+// Free is used to deallocate the repository. It should be called to finish the
+// repository. It's a good practice to use it with the defer statement:
+//
+//     repo, err := git.GetRepository("/path/to/repository")
+//     // check error
+//     defer repo.Free()
+//     // use repo
 func (r *Repository) Free() {
 	C.git_repository_free(r.repository)
 }
 
+// Config represents the configuration of a git repository.
+//
+// You can use it retrieve or define configurations of the repository.
 type Config struct {
 	config *C.struct_git_config
 }
 
+// Free is used to deallocate the Config instance. It should be called to
+// finish the instance. You can use it with the defer statement:
+//
+//     // get repository instance
+//     config, err := repo.Config()
+//     // check error
+//     defer config.Free()
 func (c *Config) Free() {
 	C.git_config_free(c.config)
 }
 
+// GetBool is used to get boolean config values.
+//
+// The dot notation is used for configuration parameters. Example:
+//
+//     v, err := config.GetBool("core.ignorecase")
+//     // check errors and use v
 func (c *Config) GetBool(name string) (bool, error) {
 	var v C.int
 	cname := C.CString(name)
@@ -70,6 +101,16 @@ func (c *Config) GetBool(name string) (bool, error) {
 	return v == 1, nil
 }
 
+// SetBool is used to add a boolean setting to the configuration file.
+//
+// The format of the configuration parameter is the same as in GetBool. If the
+// configuration parameter is not declared in the config file, it will be
+// created. Example of use:
+//
+//     err := config.SetBool("core.ignorecase", true)
+//     if err != nil {
+//         panic(err)
+//     }
 func (c *Config) SetBool(name string, value bool) error {
 	var v C.int = 0
 	if value {
@@ -83,6 +124,9 @@ func (c *Config) SetBool(name string, value bool) error {
 	return nil
 }
 
+// GetString is used to get string config values.
+//
+// The format of the configuration parameter is the same as in GetBool.
 func (c *Config) GetString(name string) (string, error) {
 	var v *C.char
 	cname := C.CString(name)
@@ -93,6 +137,10 @@ func (c *Config) GetString(name string) (string, error) {
 	return C.GoString(v), nil
 }
 
+// SetString is used to add a string setting to the config file.
+//
+// The format of the configuration parameter is the same as in GetBool. If the
+// parameter is not declared in the config file, it will be created.
 func (c *Config) SetString(name, value string) error {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
@@ -104,6 +152,9 @@ func (c *Config) SetString(name, value string) error {
 	return nil
 }
 
+// GetInt64 is used to get int64 config values.
+//
+// The format of the configuration parameter is the same as in GetBool.
 func (c *Config) GetInt64(name string) (int64, error) {
 	var v C.int64_t
 	cname := C.CString(name)
@@ -114,6 +165,10 @@ func (c *Config) GetInt64(name string) (int64, error) {
 	return int64(v), nil
 }
 
+// SetInt64 is used to add a int64 setting to the config file.
+//
+// The format of the configuration parameter is the same as in GetBool. If the
+// parameter is not declared in the config file, it will be created.
 func (c *Config) SetInt64(name string, value int64) error {
 	cname := C.CString(name)
 	defer C.free(unsafe.Pointer(cname))
