@@ -10,6 +10,25 @@ import (
 	"unsafe"
 )
 
+// Commit represents a git commit.
+type Commit struct {
+	commit *C.struct_git_commit
+}
+
+// Free is used to deallocate a commit object.
+func (c *Commit) Free() {
+	C.git_commit_free(c.commit)
+}
+
+// Id returns the hash of the commit.
+func (c *Commit) Id() string {
+	oid := C.git_commit_id(c.commit)
+	defer C.free(unsafe.Pointer(oid))
+	id := C.git_oid_allocfmt(oid)
+	defer C.free(unsafe.Pointer(id))
+	return C.GoString(id)
+}
+
 // Repository is the basic type of the git package, it represents a git
 // repository.
 type Repository struct {
@@ -65,6 +84,20 @@ func (r *Repository) Config() (*Config, error) {
 //     // use repo
 func (r *Repository) Free() {
 	C.git_repository_free(r.repository)
+}
+
+// Head returns the commit at the head of the repository.
+func (r *Repository) Head() (*Commit, error) {
+	var reference *C.struct_git_reference
+	if C.git_repository_head(&reference, r.repository) != C.GIT_OK {
+		return nil, lastErr()
+	}
+	defer C.git_reference_free(reference)
+	c := new(Commit)
+	if C.git_commit_lookup(&c.commit, r.repository, C.git_reference_oid(reference)) != C.GIT_OK {
+		return nil, lastErr()
+	}
+	return c, nil
 }
 
 // Config represents the configuration of a git repository.

@@ -1,6 +1,7 @@
 package git
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"path"
@@ -24,6 +25,18 @@ func createRepository() string {
 	err = cmd.Run()
 	if err != nil {
 		panic(err)
+	}
+	err = exec.Command("touch", path.Join(p, "README")).Run()
+	if err != nil {
+		panic(err)
+	}
+	err = exec.Command("git", "--work-tree="+p, "--git-dir="+p+"/.git", "add", ".").Run()
+	if err != nil {
+		panic(err)
+	}
+	out, err := exec.Command("git", "--work-tree="+p, "--git-dir="+p+"/.git", "commit", "-m", "initial commit").CombinedOutput()
+	if err != nil {
+		log.Panicf("Failed to commit (%s): %s", err, out)
 	}
 	return p
 }
@@ -193,5 +206,29 @@ func TestConfigSetString(t *testing.T) {
 	user, _ := config.GetString("github.user")
 	if user != "franciscosouza" {
 		t.Errorf("Failed to set github.user value, it's %s.", user)
+	}
+}
+
+func TestHead(t *testing.T) {
+	p := createRepository()
+	defer removeRepository(p)
+	r, err := GetRepository(p)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	defer r.Free()
+	last, err := exec.Command("git", "--work-tree="+p, "--git-dir="+p+"/.git", "log", "-1", "--format=format:%H").CombinedOutput()
+	if err != nil {
+		t.Errorf("Failed to get last commit (%s): %s", err, last)
+		t.FailNow()
+	}
+	commit, err := r.Head()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if commit.Id() != string(last) {
+		t.Errorf("Failed to get head. Want %s, got %s.", last, commit.Id())
 	}
 }
