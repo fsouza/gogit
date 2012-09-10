@@ -47,7 +47,7 @@ func InitRepository(path string, bare bool) (*Repository, error) {
 	if bare {
 		cbare = 1
 	}
-	repo := &Repository{}
+	repo := new(Repository)
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
 	if C.git_repository_init(&repo.repository, cpath, cbare) != C.GIT_OK {
@@ -62,7 +62,7 @@ func InitRepository(path string, bare bool) (*Repository, error) {
 // it exists but is not a git repository or if the path exists, is a git
 // repository, but the user does not have access to it).
 func OpenRepository(path string) (*Repository, error) {
-	repo := &Repository{}
+	repo := new(Repository)
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
 	if C.git_repository_open(&repo.repository, cpath) != C.GIT_OK {
@@ -74,7 +74,7 @@ func OpenRepository(path string) (*Repository, error) {
 // Config returns a Config instance, representing the configuration of the
 // repository.
 func (r *Repository) Config() (*Config, error) {
-	conf := &Config{}
+	conf := new(Config)
 	if C.git_repository_config(&conf.config, r.repository) != C.GIT_OK {
 		return nil, lastErr()
 	}
