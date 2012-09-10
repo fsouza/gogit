@@ -236,3 +236,16 @@ func TestHead(t *testing.T) {
 		t.Errorf("Failed to get head. Want %s, got %s.", last, commit.Id())
 	}
 }
+
+func TestGitErrorIsAnError(t *testing.T) {
+	var _ error = GitError("")
+}
+
+func TestGitError(t *testing.T) {
+	expected := "Failed to do git stuff."
+	err := GitError(expected)
+	got := err.Error()
+	if got != expected {
+		t.Errorf("GitError failed on checking message. Want %s, got %s.", expected, got)
+	}
+}

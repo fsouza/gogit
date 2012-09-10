@@ -9,7 +9,6 @@ package git
 import "C"
 
 import (
-	"errors"
 	"unsafe"
 )
 
@@ -218,7 +217,14 @@ func (c *Config) SetInt64(name string, value int64) error {
 	return nil
 }
 
-func lastErr() error {
+// GitError is the type used for errors in this package.
+type GitError string
+
+func (err GitError) Error() string {
+	return string(err)
+}
+
+func lastErr() GitError {
 	err := C.giterr_last()
-	return errors.New(C.GoString(err.message))
+	return GitError(C.GoString(err.message))
 }
