@@ -55,7 +55,7 @@ func removeRepository(path string) {
 func TestConfigGetBool(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -77,7 +77,7 @@ func TestConfigGetBool(t *testing.T) {
 func TestConfigGetString(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -99,7 +99,7 @@ func TestConfigGetString(t *testing.T) {
 func TestConfigGetInt64(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -121,7 +121,7 @@ func TestConfigGetInt64(t *testing.T) {
 func TestConfigSetBool(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -157,7 +157,7 @@ func TestConfigSetBool(t *testing.T) {
 func TestConfigSetInt64(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -191,7 +191,7 @@ func TestConfigSetInt64(t *testing.T) {
 func TestConfigSetString(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -216,7 +216,7 @@ func TestConfigSetString(t *testing.T) {
 func TestHead(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
-	r, err := GetRepository(p)
+	r, err := OpenRepository(p)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

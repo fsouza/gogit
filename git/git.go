@@ -38,12 +38,12 @@ type Repository struct {
 	repository *C.struct_git_repository
 }
 
-// NewRepository inits a new repository.
+// InitRepository inits a new repository.
 //
 // If the path does not exist, it will be created.
 //
 // Returns an instance of Repository, or an error in case of failure.
-func NewRepository(path string, bare bool) (*Repository, error) {
+func InitRepository(path string, bare bool) (*Repository, error) {
 	var cbare C.unsigned = 0
 	if bare {
 		cbare = 1
@@ -57,8 +57,8 @@ func NewRepository(path string, bare bool) (*Repository, error) {
 	return repo, nil
 }
 
-// GetRepository opens a repository by its path.
-func GetRepository(path string) (*Repository, error) {
+// OpenRepository opens a repository by its path.
+func OpenRepository(path string) (*Repository, error) {
 	repo := &Repository{}
 	cpath := C.CString(path)
 	defer C.free(unsafe.Pointer(cpath))
