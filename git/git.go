@@ -58,6 +58,10 @@ func InitRepository(path string, bare bool) (*Repository, error) {
 }
 
 // OpenRepository opens a repository by its path.
+//
+// Returns an error in case of failure (e.g.: if the path does not exist; if
+// it exists but is not a git repository or if the path exists, is a git
+// repository, but the user does not have access to it).
 func OpenRepository(path string) (*Repository, error) {
 	repo := &Repository{}
 	cpath := C.CString(path)
