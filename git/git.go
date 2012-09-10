@@ -108,7 +108,7 @@ func (r *Repository) Head() (*Commit, error) {
 
 // Config represents the configuration of a git repository.
 //
-// You can use it retrieve or define configurations of the repository.
+// You can use it to retrieve or to define settings on the repository.
 type Config struct {
 	config *C.struct_git_config
 }
