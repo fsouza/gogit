@@ -12,6 +12,12 @@ import (
 	"unsafe"
 )
 
+func oidToString(oid *C.git_oid) string {
+	id := C.git_oid_allocfmt(oid)
+	defer C.free(unsafe.Pointer(id))
+	return C.GoString(id)
+}
+
 // Commit represents a git commit.
 type Commit struct {
 	commit *C.struct_git_commit
@@ -26,9 +32,16 @@ func (c *Commit) Free() {
 func (c *Commit) Id() string {
 	oid := C.git_commit_id(c.commit)
 	defer C.free(unsafe.Pointer(oid))
-	id := C.git_oid_allocfmt(oid)
-	defer C.free(unsafe.Pointer(id))
-	return C.GoString(id)
+	return oidToString(oid)
+}
+
+// Tree returns the tree pointed by the commit.
+func (c *Commit) Tree() (*Tree, error) {
+	t := new(Tree)
+	if C.git_commit_tree(&t.tree, c.commit) != C.GIT_OK {
+		return nil, lastErr()
+	}
+	return t, nil
 }
 
 // Repository is the basic type of the git package, it represents a git
@@ -215,6 +228,22 @@ func (c *Config) SetInt64(name string, value int64) error {
 		return lastErr()
 	}
 	return nil
+}
+
+// Tree represents a git tree.
+type Tree struct {
+	tree *C.struct_git_tree
+}
+
+// Free is used to deallocate a git tree.
+func (t *Tree) Free() {
+	C.git_tree_free(t.tree)
+}
+
+func (t *Tree) Id() string {
+	oid := C.git_tree_id(t.tree)
+	defer C.free(unsafe.Pointer(oid))
+	return oidToString(oid)
 }
 
 // GitError is the type used for errors in this package.
