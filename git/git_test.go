@@ -15,7 +15,11 @@ import (
 func createRepository() string {
 	tmpdir := os.TempDir()
 	p := path.Join(tmpdir, "gitrepo")
-	err := os.MkdirAll(p, 0700)
+	_, err := os.Stat(p)
+	if !os.IsNotExist(err) {
+		os.RemoveAll(p)
+	}
+	err = os.MkdirAll(p, 0700)
 	if err != nil {
 		panic(err)
 	}
