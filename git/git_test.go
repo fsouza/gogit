@@ -61,18 +61,16 @@ func TestConfigGetBool(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	ignorecase, err := config.GetBool("core.ignorecase")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	} else if !ignorecase {
 		t.Error("Failed to get core.ignorecase. Want true, got false.")
 	}
@@ -83,18 +81,16 @@ func TestConfigGetString(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	user, err := config.GetString("github.user")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	} else if user != "fsouza" {
 		t.Errorf("Failed to get github.user. Want fsouza, got %s.", user)
 	}
@@ -105,18 +101,16 @@ func TestConfigGetInt64(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	commits, err := config.GetInt64("section.commits")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	} else if commits != 800 {
 		t.Errorf("Failed to get section.commits. Want 800, got %d.", commits)
 	}
@@ -127,24 +121,20 @@ func TestConfigSetBool(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	err = config.SetBool("core.ignorecase", false)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	err = config.SetBool("github.login", true)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	ignorecase, _ := config.GetBool("core.ignorecase")
 	if ignorecase {
@@ -152,7 +142,7 @@ func TestConfigSetBool(t *testing.T) {
 	}
 	login, err := config.GetBool("github.login")
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	} else if !login {
 		t.Error("Set github.login to false instead of setting it to true.")
 	}
@@ -163,24 +153,20 @@ func TestConfigSetInt64(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	err = config.SetInt64("section.commits", 300)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	err = config.SetInt64("section.errors", -10)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	commits, _ := config.GetInt64("section.commits")
 	if commits != 300 {
@@ -197,19 +183,16 @@ func TestConfigSetString(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	config, err := r.Config()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	err = config.SetString("github.user", "franciscosouza")
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	user, _ := config.GetString("github.user")
 	if user != "franciscosouza" {
@@ -222,19 +205,16 @@ func TestHead(t *testing.T) {
 	defer removeRepository(p)
 	r, err := OpenRepository(p)
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	defer r.Free()
 	last, err := exec.Command("git", "--work-tree="+p, "--git-dir="+p+"/.git", "log", "-1", "--format=format:%H").CombinedOutput()
 	if err != nil {
-		t.Errorf("Failed to get last commit (%s): %s", err, last)
-		t.FailNow()
+		t.Fatalf("Failed to get last commit (%s): %s", err, last)
 	}
 	commit, err := r.Head()
 	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		t.Fatal(err)
 	}
 	if commit.Id() != string(last) {
 		t.Errorf("Failed to get head. Want %s, got %s.", last, commit.Id())
