@@ -4,7 +4,7 @@ before_install:
   - sudo apt-get install cmake curl -qq
 install:
   - pushd /tmp
-  - curl -4LO https://github.com/downloads/libgit2/libgit2/libgit2-0.17.0.tar.gz
+  - curl -sLO https://github.com/downloads/libgit2/libgit2/libgit2-0.17.0.tar.gz
   - tar -xzf libgit2-0.17.0.tar.gz
   - mkdir -p libgit2-0.17.0/build
   - pushd libgit2-0.17.0/build
