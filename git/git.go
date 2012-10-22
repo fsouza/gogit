@@ -44,6 +44,24 @@ func (c *Commit) Tree() (*Tree, error) {
 	return t, nil
 }
 
+// DiscoverRepositoryPath looks for a git repository and returns the path, or
+// an error if it cannot find the repository.
+//
+// For more details, check the documentation of the git_repository_discover
+// function in libgit2.
+func DiscoverRepositoryPath(path string) (string, error) {
+	cpath := (*C.char)(C.malloc(C.size_t(128 * unsafe.Sizeof('a'))))
+	defer C.free(unsafe.Pointer(cpath))
+	cstartpath := C.CString(path)
+	defer C.free(unsafe.Pointer(cstartpath))
+	ceiling := C.CString("/")
+	defer C.free(unsafe.Pointer(ceiling))
+	if C.git_repository_discover(cpath, 128, cstartpath, 0, ceiling) != C.GIT_OK {
+		return "", lastErr()
+	}
+	return C.GoString(cpath), nil
+}
+
 // Repository is the basic type of the git package, it represents a git
 // repository.
 type Repository struct {

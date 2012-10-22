@@ -56,6 +56,25 @@ func removeRepository(path string) {
 	}
 }
 
+func TestDiscoverRepositoryPath(t *testing.T) {
+	p := createRepository()
+	defer removeRepository(p)
+	dirPath := path.Join(p, "directory")
+	err := os.MkdirAll(dirPath, 0700)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rPath, err := DiscoverRepositoryPath(dirPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo, err := OpenRepository(rPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	repo.Free()
+}
+
 func TestConfigGetBool(t *testing.T) {
 	p := createRepository()
 	defer removeRepository(p)
