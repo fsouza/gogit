@@ -255,6 +255,5 @@ func (err GitError) Error() string {
 
 func lastErr() GitError {
 	err := C.giterr_last()
-	defer C.free(unsafe.Pointer(err))
 	return GitError(C.GoString(err.message))
 }
